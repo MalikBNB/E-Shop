@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Core.Entities;
 using Core.Interfaces;
 
-namespace Infrastructure.Data
+namespace Infrastructure.Data.Repositories
 {
     public class ProductRepository : IProductRepository
     {

@@ -1,4 +1,12 @@
+using API.Errors;
+using API.Extensions;
+using API.Helpers;
+using API.Middleware;
+using Core.Entities;
+using Core.Interfaces;
 using Infrastructure.Data;
+using Infrastructure.Data.Repositories;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -6,12 +14,18 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
+
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
 
+builder.Services.AddAutoMapper(typeof(MappingProfiles));
+
 builder.Services.AddDbContext<AppDbContext>(options => 
             options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddSwaggerDocumentation();
+builder.Services.AddApplicationServices();
 
 
 var app = builder.Build();
@@ -39,12 +53,19 @@ catch(Exception ex)
 #endregion MigrateAsync / Seeding Data
 
 // Configure the HTTP request pipeline.
+app.UseMiddleware<ExceptionMiddleware>();
+
 if (app.Environment.IsDevelopment())
 {
+    app.UseSwaggerDocumentation();
     app.MapOpenApi();
 }
 
+app.UseStatusCodePagesWithReExecute("/errors/{0}"); // Ex. If the path doesn't match any route call the error method inside ErrorController 
+
 app.UseHttpsRedirection();
+
+app.UseStaticFiles(); // To load images from wwwroot
 
 app.UseAuthorization();
 
