@@ -15,7 +15,7 @@ namespace API.Controllers
         [HttpGet("not-found")]
         public IActionResult GetNotFoundRequest()
         {
-            return Ok();
+            return NotFound(new ApiResponse(404));
         }
 
         [HttpGet("server-error")]
@@ -23,7 +23,7 @@ namespace API.Controllers
         {
             Product d = null;
             var f = d.Price.ToString();
-            return BadRequest();
+            return BadRequest(new ApiResponse(500));
         }
 
         [HttpGet("bad-request")]

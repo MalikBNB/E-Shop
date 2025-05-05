@@ -1,18 +1,47 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
 using Core.Entities;
 using Core.Interfaces;
+using Core.Specifications;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Data.Repositories
 {
     public class ProductRepository : IProductRepository
     {
-        public Task<Product> GetProductByIdAsync(int id)
+        protected readonly AppDbContext _context;
+        internal DbSet<Product> dbSet;
+
+        public ProductRepository(AppDbContext context)
         {
-            throw new NotImplementedException();
+            _context = context;
+            dbSet = context.Set<Product>();
+        }
+
+
+        public async Task<Product> GetByIdAsync(int id)
+        {
+            return await dbSet.FindAsync(id);
+        }
+
+        public async Task<IEnumerable<Product>> GetAllAsync()
+        {
+            return await dbSet.ToListAsync();
+        }
+
+        public async Task<Product> GetEntityWithSpec(ISpecification<Product> spec)
+        {
+            return await ApplySpecification(spec).FirstOrDefaultAsync();
+        }
+
+        public async Task<IEnumerable<Product>> ListAsync(ISpecification<Product> spec)
+        {
+            return await ApplySpecification(spec).ToListAsync();
+        }
+
+
+        private IQueryable<Product> ApplySpecification(ISpecification<Product> spec)
+        {
+            return SpecificationEvaluator<Product>.GetQuery(dbSet.AsQueryable(), spec);
         }
     }
 }
