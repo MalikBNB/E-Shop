@@ -13,7 +13,7 @@ namespace Core.Entities
         public decimal Price { get; set; }
         public int Qty { get; set; }
         public string PictureUrl { get; set; }
-        public string Brand { get; set; }
-        public string Type { get; set; }
+        public string ProductBrand { get; set; }
+        public string ProductType { get; set; }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using API.Errors;
 using Core.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,6 +11,13 @@ namespace API.Controllers
         public BugsController()
         {
 
+        }
+
+        [HttpGet("test-auth")]
+        [Authorize]
+        public ActionResult<string> GetSecretText()
+        {
+            return "secret data";
         }
 
         [HttpGet("not-found")]
