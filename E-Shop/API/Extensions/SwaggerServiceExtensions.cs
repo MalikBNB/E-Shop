@@ -1,4 +1,6 @@
-﻿namespace API.Extensions
+﻿using Microsoft.OpenApi.Models;
+
+namespace API.Extensions
 {
     public static class SwaggerServiceExtensions
     {
@@ -6,11 +8,37 @@
         {
             services.AddSwaggerGen(options =>
             {
-                options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+                options.SwaggerDoc("v1", new OpenApiInfo
                 {
                     Title = "E-Shop API",
                     Version = "v1",
                 });
+
+                var securitySchema = new OpenApiSecurityScheme
+                {
+                    Description = "JWT Auth Bearer Scheme",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "bearer",
+                    Reference = new OpenApiReference
+                    {
+                        Type = ReferenceType.SecurityScheme,
+                        Id = "Bearer"
+                    }
+                };
+
+                options.AddSecurityDefinition("Bearer", securitySchema);
+
+                var secutiryRequirement = new OpenApiSecurityRequirement
+                {
+                    {
+                        securitySchema,
+                        new []{"Bearer"}
+                    }
+                };
+
+                options.AddSecurityRequirement(secutiryRequirement);
             });
 
             return services;
