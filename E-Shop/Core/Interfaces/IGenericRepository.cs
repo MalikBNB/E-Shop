@@ -11,5 +11,9 @@ namespace Core.Interfaces
         Task<T> GetEntityWithSpec(ISpecification<T> spec);
         Task<IEnumerable<T>> ListAsync(ISpecification<T> spec);
         Task<int> CountAsync(ISpecification<T> spec);
+        // Why we don't make those methods Async ? => Because they are not responsible to comunicate with Db they just tell EF to track the entity
+        void Add(T entity);
+        void Update(T entity);
+        void Delete(T entity);
     }
 }

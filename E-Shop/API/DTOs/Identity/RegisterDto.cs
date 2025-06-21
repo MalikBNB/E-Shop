@@ -6,7 +6,10 @@ namespace API.DTOs.Identity
     public class RegisterDto
     {
         [Required]
-        public string DisplayName { get; set; }
+        public string FirstName { get; set; }
+        
+        [Required]
+        public string LastName { get; set; }
 
         [Required]
         [EmailAddress]
