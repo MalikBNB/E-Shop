@@ -12,8 +12,8 @@ namespace Core.Specifications
         public ProductsWithTypesAndBrandsSpecification(ProductSpecParams productParams)
             : base(p => 
                 (string.IsNullOrEmpty(productParams.Search) || p.Name.ToLower().Contains(productParams.Search!)) &&
-                (!productParams.BrandId.HasValue || p.ProductBrandId == productParams.BrandId) && 
-                (!productParams.TypeId.HasValue || p.ProductTypeId == productParams.TypeId)
+                (string.IsNullOrWhiteSpace(productParams.BrandId) || productParams.BrandId.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList().Contains(p.ProductBrandId.ToString())) &&
+                (string.IsNullOrWhiteSpace(productParams.TypeId) || productParams.TypeId.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList().Contains(p.ProductTypeId.ToString()))
             )
         {
             AddInclude(p => p.ProductType);
