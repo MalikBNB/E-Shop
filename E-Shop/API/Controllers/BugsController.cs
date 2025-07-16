@@ -1,4 +1,5 @@
-﻿using API.Errors;
+﻿using API.DTOs;
+using API.Errors;
 using Core.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -40,10 +41,11 @@ namespace API.Controllers
             return BadRequest(new ApiResponse(400));
         }
 
-        [HttpGet("bad-request/{id}")]
-        public IActionResult GetModelBadRequest(int id)
+        [HttpPost("validation-error")]
+        public IActionResult GetModelBadRequest(OrderDto orderDto)
         {
-            return BadRequest();
+            //new ApiResponse(400, "One or more validation errors occured")
+            return Ok();
         }
     }
 }
