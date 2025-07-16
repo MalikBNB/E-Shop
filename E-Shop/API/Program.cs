@@ -2,8 +2,10 @@ using API.Extensions;
 using API.Helpers;
 using API.Middleware;
 using Core.Entities.Identity;
+using Core.Interfaces;
 using Infrastructure.Data;
 using Infrastructure.Identity;
+using Infrastructure.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using StackExchange.Redis;
@@ -28,13 +30,15 @@ builder.Services.AddDbContext<AppIdentityDbContext>(options =>
 
 builder.Services.AddSingleton<IConnectionMultiplexer>(c =>
 {
-
+    var conString = builder.Configuration.GetConnectionString("Redis") 
+            ?? throw new Exception("Can't get redis connection string");
     var config = ConfigurationOptions.Parse(
-        builder.Configuration.GetConnectionString("Redis"), true
+        conString, true
     );
 
     return ConnectionMultiplexer.Connect(config);
 });
+builder.Services.AddSingleton<ICartService, CartService>();
 
 builder.Services.AddSwaggerDocumentation();
 builder.Services.AddApplicationServices();

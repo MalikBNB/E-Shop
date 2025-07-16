@@ -14,22 +14,22 @@ namespace Infrastructure.Services
     public class OrderService : IOrderService
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IBasketRepository _basketRepo;
+        private readonly ICartService _cartService;
 
-        public OrderService(IUnitOfWork unitOfWork, IBasketRepository basketRepo)
+        public OrderService(IUnitOfWork unitOfWork, ICartService CartService)
         {
             _unitOfWork = unitOfWork;
-            _basketRepo = basketRepo;
+            _cartService = CartService;
         }
 
-        public async Task<Order> CreateOrderAsync(string buyerEmail, int deliveryMethodId, string basketId, Address shippingAddress)
+        public async Task<Order> CreateOrderAsync(string buyerEmail, int deliveryMethodId, string cartId, Address shippingAddress)
         {
-            // Get basket from Redis
-            var basket = await _basketRepo.GetBasketAsync(basketId);
+            // Get Cart from Redis
+            var Cart = await _cartService.GetCartAsync(cartId);
 
             // Create Order Items
             var items = new List<OrderItem>();
-            foreach (var item in basket.BasketItems)
+            foreach (var item in Cart.CartItems)
             {
                 var product = await _unitOfWork.Repository<Product>().GetByIdAsync(item.Id);
                 var itemOrdered = new ProductItemOrdered(product.Id, product.Name, product.PictureUrl);
@@ -52,8 +52,8 @@ namespace Infrastructure.Services
             var result = await _unitOfWork.CompleteAsync();
             if (result <= 0) return null;
 
-            // Delete basket
-            await _basketRepo.DeleteBasketAsync(basketId);
+            // Delete Cart
+            await _cartService.DeleteCartAsync(cartId);
 
             return order;
         }
