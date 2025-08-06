@@ -31,7 +31,7 @@ namespace Infrastructure.Services
             var items = new List<OrderItem>();
             foreach (var item in Cart.CartItems)
             {
-                var product = await _unitOfWork.Repository<Product>().GetByIdAsync(item.Id);
+                var product = await _unitOfWork.Repository<Product>().GetByIdAsync(item.ProductId);
                 var itemOrdered = new ProductItemOrdered(product.Id, product.Name, product.PictureUrl);
                 var orderItem = new OrderItem(itemOrdered, product.Price, item.Qty);
 
