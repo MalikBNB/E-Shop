@@ -5,21 +5,20 @@ namespace API.DTOs.Identity
     public class AddressDto
     {
         [Required]
-        public string FirstName { get; set; }
+        public string Line1 { get; set; } = string.Empty;
+
+        public string? Line2 { get; set; }
 
         [Required]
-        public string LastName { get; set; }
+        public string City { get; set; } = string.Empty;
 
         [Required]
-        public string Street { get; set; }
+        public string State { get; set; } = string.Empty;
 
         [Required]
-        public string City { get; set; }
+        public string ZipCode { get; set; } = string.Empty;
 
         [Required]
-        public string State { get; set; }
-
-        [Required]
-        public string ZipCode { get; set; }
+        public string Country { get; set; } = string.Empty;
     }
 }

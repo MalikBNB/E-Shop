@@ -25,7 +25,7 @@ namespace Infrastructure.Services
             var claims = new List<Claim>
             {
                 new Claim (JwtRegisteredClaimNames.Email, user.Email),
-                new Claim (JwtRegisteredClaimNames.GivenName, user.DisplayName),
+                new Claim (JwtRegisteredClaimNames.GivenName, $"{user.FirstName} {user.FirstName}"),
             };
 
             var credentials = new SigningCredentials(_key, SecurityAlgorithms.HmacSha256);
@@ -35,12 +35,12 @@ namespace Infrastructure.Services
                 Subject = new ClaimsIdentity(claims),
                 Expires = DateTime.Now.AddDays(7),
                 SigningCredentials = credentials,
-                Issuer = _config["Token:Issuer"],          
+                Issuer = _config["Token:Issuer"],
             };
 
             var tokenHandler = new JwtSecurityTokenHandler();
 
-            var token = tokenHandler.CreateToken(tokenDiscriptor);  
+            var token = tokenHandler.CreateToken(tokenDiscriptor);
 
             return tokenHandler.WriteToken(token);
         }

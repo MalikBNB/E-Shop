@@ -1,4 +1,5 @@
-﻿using API.DTOs;
+﻿using System.Security.Claims;
+using API.DTOs;
 using API.Errors;
 using Core.Entities;
 using Microsoft.AspNetCore.Authorization;
@@ -9,43 +10,62 @@ namespace API.Controllers
 {
     public class BugsController : BaseApiController
     {
-        public BugsController()
+        [HttpGet("unauthorized")]
+        public IActionResult GetUnauthorized()
         {
-
+            return Unauthorized();
         }
 
-        [HttpGet("test-auth")]
-        [Authorize]
-        public ActionResult<string> GetSecretText()
+        [HttpGet("badrequest")]
+        public IActionResult GetBadRequest()
         {
-            return "secret data";
+            return BadRequest("Not a good request");
         }
 
-        [HttpGet("not-found")]
-        public IActionResult GetNotFoundRequest()
+        [HttpGet("notfound")]
+        public IActionResult GetNotFound()
         {
-            return NotFound(new ApiResponse(404));
+            return NotFound();
         }
 
-        [HttpGet("server-error")]
-        public IActionResult GetServerError()
+        [HttpGet("internalerror")]
+        public IActionResult GetInternalError()
         {
-            Product d = null;
-            var f = d.Price.ToString();
-            return BadRequest(new ApiResponse(500));
+            throw new Exception("This is a test exception");
         }
 
-        [HttpGet("bad-request")]
-        public IActionResult GeBadRequest()
+        [HttpPost("validationerror")]
+        public IActionResult GetValidationError(ProductResponseDto product)
         {
-            return BadRequest(new ApiResponse(400));
-        }
-
-        [HttpPost("validation-error")]
-        public IActionResult GetModelBadRequest(OrderDto orderDto)
-        {
-            //new ApiResponse(400, "One or more validation errors occured")
             return Ok();
+        }
+
+        [Authorize]
+        [HttpGet("secret")]
+        public IActionResult GetSecret()
+        {
+            var name = User.FindFirst(ClaimTypes.Name)?.Value;
+            var id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            return Ok("Hello " + name + " with the id of " + id);
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpGet("admin-secret")]
+        public IActionResult GetAdminSecret()
+        {
+            var name = User.FindFirst(ClaimTypes.Name)?.Value;
+            var id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var isAdmin = User.IsInRole("Admin");
+            var roles = User.FindFirstValue(ClaimTypes.Role);
+
+            return Ok(new
+            {
+                name,
+                id,
+                isAdmin,
+                roles
+            });
         }
     }
 }

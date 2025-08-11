@@ -30,14 +30,12 @@ builder.Services.AddDbContext<AppIdentityDbContext>(options =>
 
 builder.Services.AddSingleton<IConnectionMultiplexer>(c =>
 {
-    var conString = builder.Configuration.GetConnectionString("Redis") 
-            ?? throw new Exception("Can't get redis connection string");
-    var config = ConfigurationOptions.Parse(
-        conString, true
-    );
+    var conString = builder.Configuration.GetConnectionString("Redis") ?? throw new Exception("Can't get redis connection string");
+    var config = ConfigurationOptions.Parse(conString, true);
 
     return ConnectionMultiplexer.Connect(config);
 });
+
 builder.Services.AddSingleton<ICartService, CartService>();
 
 builder.Services.AddSwaggerDocumentation();
@@ -48,11 +46,32 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("CorsPolicy", policy =>
     {
-        policy.AllowAnyHeader().AllowAnyMethod().AllowCredentials().WithOrigins("http://localhost:4200", "https://localhost:4200");
+        policy.AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials()
+              .WithOrigins("http://localhost:4200", "https://localhost:4200");
     });
 });
 
 var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+app.UseMiddleware<ExceptionMiddleware>();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwaggerDocumentation();
+    app.MapOpenApi();
+}
+
+app.UseStatusCodePagesWithReExecute("/errors/{0}"); // Ex. If the path doesn't match any route call the error method inside ErrorController 
+app.UseHttpsRedirection();
+app.UseStaticFiles(); // To load images from wwwroot
+app.UseCors("CorsPolicy");
+app.UseAuthentication();
+app.UseAuthorization();
+app.MapControllers();
+app.MapGroup("api").MapIdentityApi<AppUser>(); // api/login
 
 #region MigrateAsync / Seeding Data
 
@@ -79,28 +98,5 @@ catch (Exception ex)
 }
 
 #endregion MigrateAsync / Seeding Data
-
-// Configure the HTTP request pipeline.
-app.UseMiddleware<ExceptionMiddleware>();
-
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwaggerDocumentation();
-    app.MapOpenApi();
-}
-
-app.UseStatusCodePagesWithReExecute("/errors/{0}"); // Ex. If the path doesn't match any route call the error method inside ErrorController 
-
-app.UseHttpsRedirection();
-
-app.UseStaticFiles(); // To load images from wwwroot
-
-app.UseCors("CorsPolicy");
-
-app.UseAuthentication();
-
-app.UseAuthorization();
-
-app.MapControllers();
 
 app.Run();

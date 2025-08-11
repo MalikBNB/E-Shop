@@ -16,17 +16,18 @@ namespace Infrastructure.Identity
 
             var user = new AppUser
             {
-                DisplayName = "Mohammed",
+                FirstName = "Mohammed",
+                LastName = "Bounab",
                 Email = "mohammed@email.com",
                 UserName = "mohammed@email.com",
                 Address = new Address
                 {
-                    FirstName = "Mohammed",
-                    LastName = "Bounab",
-                    Street = "25th street",
-                    City = "Algiers",
-                    State = "ALG",
-                    ZipCode = "16000"
+                    Line1 = "25th street",
+                    Line2 = "",
+                    City = "Bab-ezzouar",
+                    State = "Algiers",
+                    ZipCode = "16000",
+                    Country = "Algeria"
                 }
             };
 
