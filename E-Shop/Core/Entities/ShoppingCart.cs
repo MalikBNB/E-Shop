@@ -8,15 +8,11 @@ namespace Core.Entities
 {
     public class ShoppingCart
     {
-        public string Id { get; set; } // The client side app is responsible for generating this Id because we are not gonna store it in our Db
+        public required string Id { get; set; } // The client side app is responsible for generating this Id because we are not gonna store it in our Db
         public List<CartItem> CartItems { get; set; } = [];
-
-        public ShoppingCart() { }
-
-        public ShoppingCart(string id)
-        {
-            Id = id;
-        }
+        public int? DeliveryMethodId { get; set; }
+        public string? ClientSecret { get; set; }
+        public string? PaymentIntentId { get; set; }
 
 
     }

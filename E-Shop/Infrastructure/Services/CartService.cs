@@ -25,7 +25,7 @@ namespace Infrastructure.Services
             return data.IsNullOrEmpty ? null : JsonSerializer.Deserialize<ShoppingCart>(data!);
         }
 
-        public async Task<ShoppingCart> UpdateCartAsync(ShoppingCart cart)
+        public async Task<ShoppingCart> SetCartAsync(ShoppingCart cart)
         {
             var created = await _database.StringSetAsync(cart.Id, JsonSerializer.Serialize(cart), TimeSpan.FromDays(30));
             if (!created) return null!;

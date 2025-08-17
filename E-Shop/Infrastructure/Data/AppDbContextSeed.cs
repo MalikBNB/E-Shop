@@ -56,9 +56,9 @@ namespace Infrastructure.Data
                 {
                     var dmData = await File.ReadAllTextAsync("../Infrastructure/Data/SeedData/delivery.json");
 
-                    var dmMethods = JsonSerializer.Deserialize<List<DeliveryMethod>>(dmData);
+                    var methods = JsonSerializer.Deserialize<List<DeliveryMethod>>(dmData);
 
-                    foreach (var method in dmMethods)
+                    foreach (var method in methods)
                         await context.DeliveryMethods.AddAsync(method);
 
                     await context.SaveChangesAsync();

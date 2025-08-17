@@ -7,9 +7,8 @@ export type User = {
 
 export type Address = {
   line1: string;
-  line2: string;
-  street: string;
-  state: string;
+  line2?: string;
+  city: string;
   zipCode: string;
   country: string;
 }

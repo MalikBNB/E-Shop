@@ -13,9 +13,6 @@ namespace API.DTOs.Identity
         public string City { get; set; } = string.Empty;
 
         [Required]
-        public string State { get; set; } = string.Empty;
-
-        [Required]
         public string ZipCode { get; set; } = string.Empty;
 
         [Required]

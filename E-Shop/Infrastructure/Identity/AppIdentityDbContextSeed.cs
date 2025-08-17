@@ -25,7 +25,6 @@ namespace Infrastructure.Identity
                     Line1 = "25th street",
                     Line2 = "",
                     City = "Bab-ezzouar",
-                    State = "Algiers",
                     ZipCode = "16000",
                     Country = "Algeria"
                 }

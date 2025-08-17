@@ -17,7 +17,7 @@ namespace API.Controllers
         {
             var cart = await cartService.GetCartAsync(id);
 
-            return Ok(cart ?? new ShoppingCart(id));
+            return Ok(cart ?? new ShoppingCart { Id = id});
         }
 
         [HttpPost]
@@ -25,7 +25,7 @@ namespace API.Controllers
         {
             var shoppingCart = mapper.Map<ShoppingCartDto, ShoppingCart>(cartDto);
 
-            var updatedcart = await cartService.UpdateCartAsync(shoppingCart);
+            var updatedcart = await cartService.SetCartAsync(shoppingCart);
             if (updatedcart is null) return BadRequest("Problem with cart");
 
             return Ok(updatedcart);

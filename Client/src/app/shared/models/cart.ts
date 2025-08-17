@@ -3,6 +3,9 @@ import { nanoid } from 'nanoid';
 export type CartType = {
   id: string;
   cartItems: CartItem[];
+  deliveryMethodId?: number;
+  clientSecret?: string;
+  paymentIntentId?: string;
 };
 
 export type CartItem = {
@@ -18,4 +21,7 @@ export type CartItem = {
 export class Cart implements CartType {
   id = nanoid();
   cartItems: CartItem[] = [];
+  deliveryMethodId?: number;
+  clientSecret?: string;
+  paymentIntentId?: string;
 }
