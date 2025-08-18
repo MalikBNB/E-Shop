@@ -9,7 +9,7 @@ namespace API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PaymentsController(IPaymentService paymentService, IGenericRepository<DeliveryMethod> dmRepo) : BaseApiController
+    public class PaymentsController(IPaymentService paymentService, IUnitOfWork unitOfWork) : BaseApiController
     {
         [Authorize]
         [HttpPost("{cartId}")]
@@ -24,7 +24,7 @@ namespace API.Controllers
         [HttpGet("delivery-methods")]
         public async Task<ActionResult<IReadOnlyList<DeliveryMethod>>> GetDeliveryMethods()
         {
-            return Ok(await dmRepo.GetAllAsync());
+            return Ok(await unitOfWork.Repository<DeliveryMethod>().GetAllAsync());
         }
     }
 }

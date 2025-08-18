@@ -22,7 +22,7 @@ namespace Infrastructure.Services
             _cartService = CartService;
         }
 
-        public async Task<Order> CreateOrderAsync(string buyerEmail, int deliveryMethodId, string cartId, Address shippingAddress)
+        public async Task<Order> CreateOrderAsync(string buyerEmail, int deliveryMethodId, string cartId, ShippingAddress shippingAddress)
         {
             // Get Cart from Redis
             var Cart = await _cartService.GetCartAsync(cartId);
@@ -32,10 +32,10 @@ namespace Infrastructure.Services
             foreach (var item in Cart.CartItems)
             {
                 var product = await _unitOfWork.Repository<Product>().GetByIdAsync(item.ProductId);
-                var itemOrdered = new ProductItemOrdered(product.Id, product.Name, product.PictureUrl);
-                var orderItem = new OrderItem(itemOrdered, product.Price, item.Qty);
+                //var itemOrdered = new ProductOrdered(product.Id, product.Name, product.PictureUrl);
+                //var orderItem = new OrderItem(itemOrdered, product.Price, item.Qty);
 
-                items.Add(orderItem);
+                //items.Add(orderItem);
             }
 
             // Get delivery method
@@ -45,17 +45,17 @@ namespace Infrastructure.Services
             var subtotal = items.Sum(item => item.Price * item.Quantity);
 
             //Create order
-            var order = new Order(items, buyerEmail, shippingAddress, deliveryMethod, subtotal);
-            _unitOfWork.Repository<Order>().Add(order);
+            //var order = new Order();
+            //_unitOfWork.Repository<Order>().Add(order);
 
             // Save to db
-            var result = await _unitOfWork.CompleteAsync();
-            if (result <= 0) return null;
+            var success = await _unitOfWork.CompleteAsync();
+            if (!success) return null;
 
             // Delete Cart
             await _cartService.DeleteCartAsync(cartId);
 
-            return order;
+            return null;
         }
 
         public async Task<IEnumerable<DeliveryMethod>> GetDeliveryMethodsAsync()
@@ -65,7 +65,7 @@ namespace Infrastructure.Services
 
         public async Task<Order> GetOrderByIdAsync(int id, string buyerEmail)
         {
-            var spec = new OrderWithItemsAndOrderingSpecification(id, buyerEmail);
+            var spec = new OrderWithItemsAndOrderingSpecification(buyerEmail, id);
 
             return await _unitOfWork.Repository<Order>().GetEntityWithSpec(spec);
         }

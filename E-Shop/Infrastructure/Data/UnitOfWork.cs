@@ -11,53 +11,43 @@ using Infrastructure.Data.Repositories;
 
 namespace Infrastructure.Data
 {
-    public class UnitOfWork : IUnitOfWork
+    public class UnitOfWork(AppDbContext dbContext) : IUnitOfWork
     {
-        private readonly AppDbContext _dbContext;
         //private Hashtable _repositories;
-        private readonly ConcurrentDictionary<Type, object> _repositories = new();
+        //private readonly ConcurrentDictionary<Type, object> _repositories = new();
+        private readonly ConcurrentDictionary<string, object> _repositories = new();
 
-
-        public UnitOfWork(AppDbContext dbContext)
+        public async Task<bool> CompleteAsync()
         {
-            _dbContext = dbContext;
-        }
-
-        public async Task<int> CompleteAsync()
-        {
-            return await _dbContext.SaveChangesAsync();
+            return await dbContext.SaveChangesAsync() > 0;
         }
 
         public void Dispose()
         {
-            _dbContext.Dispose();   
+            dbContext.Dispose();   
         }
 
         // .Net 9 implimentation
-        public IGenericRepository<TEntity> Repository<TEntity>() where TEntity : BaseEntity
-        {
-            return (IGenericRepository<TEntity>)_repositories.GetOrAdd(
-                typeof(TEntity),
-                _ => new GenericRepository<TEntity>(_dbContext)
-            );
-        }
-
         //public IGenericRepository<TEntity> Repository<TEntity>() where TEntity : BaseEntity
         //{
-        //    if(_repositories is null ) _repositories = new Hashtable();
-
-        //    var type = typeof(TEntity).Name;
-
-        //    if (!_repositories.ContainsKey(type))
-        //    {
-        //        var repoType = typeof(GenericRepository<>);
-        //        var repoInstance = Activator.CreateInstance(repoType.MakeGenericType(typeof(TEntity)), _dbContext);
-
-        //        _repositories.Add(type, repoInstance);
-        //    }
-
-        //    return (IGenericRepository<TEntity>)_repositories[type];
+        //    return (IGenericRepository<TEntity>)_repositories.GetOrAdd(
+        //        typeof(TEntity),
+        //        _ => new GenericRepository<TEntity>(dbContext)
+        //    );
         //}
+
+        public IGenericRepository<TEntity> Repository<TEntity>() where TEntity : BaseEntity
+        {
+            var type = typeof(TEntity).Name;
+
+            return (IGenericRepository<TEntity>)_repositories.GetOrAdd(type, t =>
+            {
+                var repositoryType = typeof(GenericRepository<>).MakeGenericType(typeof(TEntity));
+                return Activator.CreateInstance(repositoryType, dbContext)
+                    ?? throw new InvalidOperationException(
+                        $"Could not create repository instance for {t}");
+            });
+        }
     }
 
     /*

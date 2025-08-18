@@ -10,26 +10,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Data.Repositories
 {
-    public class GenericRepository<T> : IGenericRepository<T> where T : BaseEntity
+    public class GenericRepository<T>(AppDbContext context) : IGenericRepository<T> where T : BaseEntity
     {
-        protected readonly AppDbContext _context;
-        internal DbSet<T> dbSet;
-
-        public GenericRepository(AppDbContext context)
-        {
-            _context = context;
-            dbSet = context.Set<T>();
-        }
-
-
         public async Task<T> GetByIdAsync(int id)
         {
-            return await dbSet.FindAsync(id);
+            return await context.Set<T>().FindAsync(id);
         }
 
-        public async Task<IEnumerable<T>> GetAllAsync()
+        public async Task<IReadOnlyList<T>> GetAllAsync()
         {
-            return await dbSet.ToListAsync();
+            return await context.Set<T>().ToListAsync();
         }
 
         public async Task<T> GetEntityWithSpec(ISpecification<T> spec)
@@ -37,7 +27,7 @@ namespace Infrastructure.Data.Repositories
             return await ApplySpecification(spec).FirstOrDefaultAsync();
         }
 
-        public async Task<IEnumerable<T>> ListAsync(ISpecification<T> spec)
+        public async Task<IReadOnlyList<T>> ListAsync(ISpecification<T> spec)
         {
             return await ApplySpecification(spec).ToListAsync();
         }
@@ -49,23 +39,28 @@ namespace Infrastructure.Data.Repositories
 
         private IQueryable<T> ApplySpecification(ISpecification<T> spec)
         {
-            return SpecificationEvaluator<T>.GetQuery(dbSet.AsQueryable(), spec);
+            return SpecificationEvaluator<T>.GetQuery(context.Set<T>().AsQueryable(), spec);
         }
 
         public void Add(T entity)
         {
-            _context.Set<T>().Add(entity);
+            context.Set<T>().Add(entity);
         }
 
         public void Update(T entity)
         {
-            _context.Set<T>().Attach(entity);
-            _context.Entry(entity).State = EntityState.Modified; 
+            context.Set<T>().Attach(entity);
+            context.Entry(entity).State = EntityState.Modified; 
         }
 
         public void Delete(T entity)
         {
-            _context.Set<T>().Remove(entity);
+            context.Set<T>().Remove(entity);
+        }
+
+        public bool Exists(int id)
+        {
+            return context.Set<T>().Any(x => x.Id == id);
         }
     }
 }

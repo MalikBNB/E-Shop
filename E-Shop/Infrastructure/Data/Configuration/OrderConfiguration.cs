@@ -13,8 +13,11 @@ namespace Infrastructure.Data.Configuration
     {
         public void Configure(EntityTypeBuilder<Order> builder)
         {
-            builder.OwnsOne(o => o.ShipToAddress, a => a.WithOwner());
-            builder.Property(s => s.Status).HasConversion(o => o.ToString(), o => (OrderStatus) Enum.Parse(typeof(OrderStatus), o));
+            builder.OwnsOne(o => o.ShippingAddress, a => a.WithOwner());
+            builder.OwnsOne(o => o.PaymentSummary, p => p.WithOwner());
+            builder.Property(s => s.Status).HasConversion(o => o.ToString(), o => (OrderStatus)Enum.Parse(typeof(OrderStatus), o));
+            builder.Property(s => s.Subtotal).HasColumnType("decimal(18,2)");
+            builder.Property(s => s.OrderDate).HasConversion(d => d.ToUniversalTime(), d => DateTime.SpecifyKind(d, DateTimeKind.Utc));
             builder.HasMany(o => o.OrderItems).WithOne().OnDelete(DeleteBehavior.Cascade);
         }
     }

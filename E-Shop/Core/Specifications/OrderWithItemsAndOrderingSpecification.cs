@@ -17,7 +17,7 @@ namespace Core.Specifications
             AddOrderByDesc(o => o.OrderDate);
         }
 
-        public OrderWithItemsAndOrderingSpecification(int id, string email) : base(o => o.Id == id && o.BuyerEmail == email)
+        public OrderWithItemsAndOrderingSpecification(string email, int id) : base(o => o.Id == id && o.BuyerEmail == email)
         {
             AddInclude(o => o.OrderItems);
             AddInclude(o => o.DeliveryMethod);

@@ -38,10 +38,10 @@ builder.Services.AddSingleton<IConnectionMultiplexer>(c =>
 
 builder.Services.AddSingleton<ICartService, CartService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
-
-builder.Services.AddSwaggerDocumentation();
 builder.Services.AddApplicationServices();
 builder.Services.AddIdentityServices(builder.Configuration);
+
+builder.Services.AddSwaggerDocumentation();
 
 builder.Services.AddCors(options =>
 {
