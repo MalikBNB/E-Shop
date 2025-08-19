@@ -1,6 +1,7 @@
 using API.Extensions;
 using API.Helpers;
 using API.Middleware;
+using API.SignalR;
 using Core.Entities.Identity;
 using Core.Interfaces;
 using Infrastructure.Data;
@@ -54,6 +55,8 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.AddSignalR();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -73,6 +76,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.MapGroup("api").MapIdentityApi<AppUser>(); // api/login
+app.MapHub<NotificationHub>("/hub/notifications");
 
 #region MigrateAsync / Seeding Data
 

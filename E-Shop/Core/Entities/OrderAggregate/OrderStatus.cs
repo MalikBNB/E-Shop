@@ -17,6 +17,9 @@ namespace Core.Entities.OrderAggregate
 
         [EnumMember(Value = "Payment Faild")]
         PaymentFaild,
+        
+        [EnumMember(Value = "Payment Mismatch")]
+        PaymentMismatch,
 
         // [EnumMember(Value = "")] --> returns the specified value when we call the enum insted of 0, 1, 2...
     }
