@@ -16,7 +16,7 @@ jobs:
       contents: read #This is required for actions/checkout
 
     env:
-      PROJECT_PATH: ./API
+      PROJECT_PATH: ./e-shop/API
 
     steps:
       - uses: actions/checkout@v4
