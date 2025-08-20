@@ -24,10 +24,13 @@ builder.Services.AddOpenApi();
 builder.Services.AddAutoMapper(typeof(MappingProfiles));
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-            options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+            options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddDbContext<AppIdentityDbContext>(options =>
-            options.UseSqlite(builder.Configuration.GetConnectionString("IdentityConnection")));
+//builder.Services.AddDbContext<AppDbContext>(options =>
+//            options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+//builder.Services.AddDbContext<AppIdentityDbContext>(options =>
+//            options.UseSqlite(builder.Configuration.GetConnectionString("IdentityConnection")));
 
 builder.Services.AddSingleton<IConnectionMultiplexer>(c =>
 {
@@ -40,7 +43,7 @@ builder.Services.AddSingleton<IConnectionMultiplexer>(c =>
 builder.Services.AddSingleton<ICartService, CartService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddApplicationServices();
-builder.Services.AddIdentityServices(builder.Configuration);
+//builder.Services.AddIdentityServices(builder.Configuration);
 
 builder.Services.AddSwaggerDocumentation();
 
@@ -51,7 +54,8 @@ builder.Services.AddCors(options =>
         policy.AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials()
-              .WithOrigins("http://localhost:4200", "https://localhost:4200");
+              .WithOrigins("https://eshop-project-2025.azurewebsites.net");
+              //.WithOrigins("http://localhost:5000", "https://localhost:5001");
     });
 });
 
@@ -70,13 +74,18 @@ if (app.Environment.IsDevelopment())
 
 app.UseStatusCodePagesWithReExecute("/errors/{0}"); // Ex. If the path doesn't match any route call the error method inside ErrorController 
 app.UseHttpsRedirection();
+
+app.UseDefaultFiles();
 app.UseStaticFiles(); // To load images from wwwroot
+
 app.UseCors("CorsPolicy");
 app.UseAuthentication();
 app.UseAuthorization();
+
 app.MapControllers();
 app.MapGroup("api").MapIdentityApi<AppUser>(); // api/login
 app.MapHub<NotificationHub>("/hub/notifications");
+app.MapFallbackToController("Index", "Fallback");
 
 #region MigrateAsync / Seeding Data
 
@@ -88,13 +97,15 @@ var loggerFactory = services.GetRequiredService<ILoggerFactory>();
 try
 {
     var context = services.GetRequiredService<AppDbContext>();
+    var userManager = services.GetRequiredService<UserManager<AppUser>>();
     await context.Database.MigrateAsync();
+    await AppIdentityDbContextSeed.SeedUsersAsync(userManager);
     await AppDbContextSeed.SeedAsync(context, loggerFactory);
 
-    var userManager = services.GetRequiredService<UserManager<AppUser>>();
-    var identityContext = services.GetRequiredService<AppIdentityDbContext>();
-    await identityContext.Database.MigrateAsync();
-    await AppIdentityDbContextSeed.SeedUsersAsync(userManager);
+    //var userManager = services.GetRequiredService<UserManager<AppUser>>();
+    //var identityContext = services.GetRequiredService<AppIdentityDbContext>();
+    //await identityContext.Database.MigrateAsync();
+    //await AppIdentityDbContextSeed.SeedUsersAsync(userManager);
 }
 catch (Exception ex)
 {
@@ -103,5 +114,6 @@ catch (Exception ex)
 }
 
 #endregion MigrateAsync / Seeding Data
+
 
 app.Run();

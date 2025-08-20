@@ -1,8 +1,10 @@
 ﻿using API.Errors;
 using Core.Entities;
+using Core.Entities.Identity;
 using Core.Interfaces;
 using Infrastructure.Data;
 using Infrastructure.Data.Repositories;
+using Infrastructure.Identity;
 using Infrastructure.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,6 +18,10 @@ namespace API.Extensions
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+            services.AddAuthorization();
+            services.AddIdentityApiEndpoints<AppUser>()
+                .AddEntityFrameworkStores<AppDbContext>();
 
             services.Configure<ApiBehaviorOptions>(options =>
             {
