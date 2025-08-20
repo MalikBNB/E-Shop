@@ -15,7 +15,7 @@ jobs:
     permissions:
       contents: read #This is required for actions/checkout
 
-    evv:
+    env:
       PROJECT_PATH: ./API
 
     steps:
