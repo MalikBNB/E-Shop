@@ -55,7 +55,7 @@ builder.Services.AddCors(options =>
               .AllowAnyMethod()
               .AllowCredentials()
               .WithOrigins("https://eshop-project-2025.azurewebsites.net");
-              //.WithOrigins("http://localhost:5000", "https://localhost:5001");
+        //.WithOrigins("http://localhost:5000", "https://localhost:5001");
     });
 });
 

@@ -31,6 +31,14 @@ namespace Infrastructure.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<ProductBrand>()
+                        .Property(p => p.Id)
+                        .ValueGeneratedNever();
+            
+            modelBuilder.Entity<ProductType>()
+                        .Property(p => p.Id)
+                        .ValueGeneratedNever();
+
             base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
